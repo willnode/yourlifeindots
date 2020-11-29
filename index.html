@@ -18,6 +18,9 @@
       .panel {
         display: flex;
         align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
       }
       h1 {
           margin: 0;
@@ -96,15 +99,10 @@
       }
       document.getElementById("bday").value = localStorage.bday || "2000-01-01";
       document.getElementById("lifeyear").value = localStorage.lifeyear || "70";
-      if (localStorage.bday) {
-          window.scroll({
-              top: redraw() - document.body.clientWidth / 2,
-              behavior: "smooth"
-          });
-      } else {
-        redraw();
-        document.getElementById("bday").focus();
-      }
+      window.scroll({
+          top: redraw() - document.body.clientWidth / 2,
+          behavior: "smooth"
+      });
     </script>
   </body>
 </html>
