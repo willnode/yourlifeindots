@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Life on Dots</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+      }
+
+      canvas {
+        width: 100%;
+      }
+      .panel {
+        display: flex;
+        align-items: center;
+      }
+      h1 {
+          margin: 0;
+      }
+      @media print {
+        .panel {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <h1 style="margin-right: auto"><b>Your Life in Dots</b></h1>
+      <br />
+      <label>
+        <span>Your birthdate:</span>
+        <input type="date" value="2000-01-01" id="bday" oninput="redraw()" />
+      </label>
+      &nbsp;
+      <label>
+        <span>Your life expectation (years):</span>
+        <input
+          type="number"
+          min="1"
+          max="150"
+          id="lifeyear"
+          oninput="redraw()"
+        />
+      </label>
+    </div>
+    <canvas id="canvas" width="1860" height="1200"></canvas>
+    <script>
+      /** @type {HTMLCanvasElement} */
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      function redraw() {
+        var s = new Date(
+          (localStorage.bday = document.getElementById("bday").value)
+        );
+        var ss = s.getFullYear();
+        const yy = Number.parseInt(
+          (localStorage.lifeyear = document.getElementById("lifeyear").value)
+        );
+        const w = 20;
+        const cw = document.body.clientWidth;
+        const r = cw > 992 ? 3 : cw > 576 ? 6 : cw > 576 ? 8 : 12;
+        const rc = Math.ceil(366 / r);
+        const ml = 50;
+
+        canvas.width = rc * w + ml;
+        canvas.height = r * yy * w;
+
+        ctx.lineWidth = 1;
+        ctx.font = "20px sans-serif";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let y = ss; y < ss + yy; y++) {
+          var totaldays = y % 4 === 0 ? 366 : 365;
+          ctx.fillText(y, 3, (y - ss) * w * r + w);
+
+          for (let d = 1; d <= totaldays; d++) {
+            var date = new Date(y, 1, d);
+            var cc = [
+              ((d - 1) % rc) * w + ml,
+              Math.floor((d - 1) / rc) * w + (y - ss) * w * r,
+              w,
+              w,
+            ];
+            if (date < s) continue;
+            else if (date < new Date()) ctx.fillRect(...cc);
+            else ctx.strokeRect(...cc);
+          }
+        }
+        return (new Date().getFullYear() - ss) * (document.body.clientWidth / rc) * r;
+      }
+      document.getElementById("bday").value = localStorage.bday || "2000-01-01";
+      document.getElementById("lifeyear").value = localStorage.lifeyear || "70";
+      if (localStorage.bday) {
+          window.scroll({
+              top: redraw() - document.body.clientWidth / 2,
+              behavior: "smooth"
+          });
+      } else {
+        redraw();
+        document.getElementById("bday").focus();
+      }
+    </script>
+  </body>
+</html>
